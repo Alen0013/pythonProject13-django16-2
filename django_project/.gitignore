@@ -2,4 +2,8 @@
 .env
 __pycache__
 .venv/
+# JetBrains IDE (PyCharm/IntelliJ)
 .idea/
+*.iml
+*.ipr
+*.iws
