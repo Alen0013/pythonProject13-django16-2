@@ -1,0 +1,13 @@
+.pet-card {
+    transition: transform 0.2s;
+}
+.pet-card:hover {
+    transform: scale(1.05);
+}
+.pet-form input, .pet-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
