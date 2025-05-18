@@ -4,6 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('blog.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('', include('blog.urls')),
+                  path('users/', include('users.urls')),  # Корректный префикс для пользователей
+                  path('accounts/', include('django.contrib.auth.urls')),  # Встроенные роуты для login/logout
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
