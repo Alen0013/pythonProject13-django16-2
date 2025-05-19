@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
-  {% block title %}Профиль{% endblock %}
-  {% block content %}
-  <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto mt-10">
-      <h1 class="text-2xl font-bold mb-4">Профиль</h1>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Телефон:</strong> {{ user.phone|default:"Не указан" }}</p>
-      <p><strong>Telegram:</strong> {{ user.telegram|default:"Не указан" }}</p>
-      <a href="{% url 'users:logout' %}" class="bg-red-500 text-white px-4 py-2 rounded mt-4 inline-block">Выйти</a>
-  </div>
-  {% endblock %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Профиль пользователя</h1>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Телефон:</strong> {{ user.phone|default:"Не указан" }}</p>
+<p><strong>Telegram:</strong> {{ user.telegram|default:"Не указан" }}</p>
+<br>
+<a href="{% url 'users:update_profile' %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Редактировать
+    профиль</a>
+<a href="{% url 'users:logout' %}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2">Выйти</a>
+{% endblock %}
