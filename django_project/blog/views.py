@@ -16,10 +16,14 @@ def pet_create(request):
         form = PetForm(request.POST)
         if form.is_valid():
             pet = form.save(commit=False)
-            pet.owner = request.user
+            pet.owner = request.user  # Установка текущего пользователя как владельца
             pet.save()
             messages.success(request, 'Питомец успешно добавлен!')
             return redirect('blog:pet_list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Ошибка в поле '{form[field].label}': {error}")
     else:
         form = PetForm()
     return render(request, 'blog/pet_form.html', {'form': form, 'title': 'Добавить питомца'})
@@ -34,6 +38,10 @@ def pet_update(request, pk):
             form.save()
             messages.success(request, 'Питомец успешно обновлен!')
             return redirect('blog:pet_list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Ошибка в поле '{form[field].label}': {error}")
     else:
         form = PetForm(instance=pet)
     return render(request, 'blog/pet_form.html', {'form': form, 'title': 'Редактировать питомца'})

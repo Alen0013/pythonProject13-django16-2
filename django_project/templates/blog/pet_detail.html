@@ -1,23 +1,18 @@
 {% extends 'base.html' %}
-  {% load pet_tags %}
 
-  {% block title %}{{ pet.name }}{% endblock %}
+{% block title %}Питомец: {{ pet.name }}{% endblock %}
 
-  {% block content %}
-  <div class="bg-white p-6 rounded-lg shadow-md">
-      <h1 class="text-3xl font-bold mb-4">{{ pet.name }}</h1>
-      <p class="text-gray-600">Вид: {{ pet.species }}</p>
-      <p class="text-gray-600">Возраст: {{ pet.age }} {% pet_age_label pet.age %}</p>
-      <p class="text-gray-600">Владелец: {{ pet.owner.email }}</p>
-      <p class="text-gray-600">Описание: {{ pet.description }}</p>
-      <p class="text-gray-500 text-sm">Создано: {{ pet.created_at|date:"d F Y" }}</p>
-      <p class="text-gray-500 text-sm">Обновлено: {{ pet.updated_at|date:"d F Y" }}</p>
-      {% if user == pet.owner %}
-          <div class="mt-4 space-x-2">
-              <a href="{% url 'blog:pet_update' pet.pk %}" class="bg-blue-500 text-white px-4 py-2 rounded">Редактировать</a>
-              <a href="{% url 'blog:pet_delete' pet.pk %}" class="bg-red-500 text-white px-4 py-2 rounded">Удалить</a>
-          </div>
-      {% endif %}
-      <a href="{% url 'blog:pet_list' %}" class="mt-4 inline-block text-blue-600">Назад к списку</a>
-  </div>
-  {% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">{{ pet.name }}</h1>
+<p><strong>Вид:</strong> {{ pet.species }}</p>
+<p><strong>Возраст:</strong> {{ pet.age }}</p>
+<p><strong>Дата рождения:</strong> {{ pet.birth_date|default:"Не указана" }}</p>
+<p><strong>Описание:</strong> {{ pet.description }}</p>
+<p><strong>Владелец:</strong> {{ pet.owner.email }}</p>
+{% if user == pet.owner %}
+<div class="mt-4 space-x-2">
+    <a href="{% url 'blog:pet_update' pet.pk %}" class="text-blue-500 hover:underline">Редактировать</a>
+    <a href="{% url 'blog:pet_delete' pet.pk %}" class="text-red-500 hover:underline">Удалить</a>
+</div>
+{% endif %}
+{% endblock %}

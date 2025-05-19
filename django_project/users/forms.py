@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.core.exceptions import ValidationError
 
 User = get_user_model()
@@ -40,19 +40,34 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomAuthenticationForm(AuthenticationForm):
-    email = forms.EmailField(
-        label="Email",
-        max_length=254,
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'example@domain.com'})
-    )
-    password = forms.CharField(
-        label="Пароль",
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Введите пароль'})
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.clear()
+        self.fields['email'] = forms.EmailField(
+            label="Email",
+            max_length=254,
+            widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'example@domain.com'})
+        )
+        self.fields['password'] = forms.CharField(
+            label="Пароль",
+            widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Введите пароль'})
+        )
+        self.username_field = User._meta.get_field('email')
 
-    class Meta:
-        model = User
-        fields = ('email', 'password')
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        if email and password:
+            self.user_cache = authenticate(self.request, username=email, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError(
+                    "Неверный email или пароль.",
+                    code='invalid_login',
+                )
+            else:
+                self.confirm_login_allowed(self.user_cache)
+        return self.cleaned_data
 
 
 class UserUpdateForm(forms.ModelForm):
