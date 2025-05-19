@@ -1,0 +1,59 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$tkKhPtqAyV4bbhaUnGx5tX$xe4h70arSqrrEFQFmm2MCa2rjNNpVcALQzRi16kA2II=",
+      "last_login": "2025-05-19T16:24:02.733Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-18T20:19:03.245Z",
+      "email": "alen.sargsyan.milan2005@mail.ru",
+      "phone": "+7 919 354 52 02",
+      "telegram": "@slimshady105",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$2ubr4waWsqdHuMaR5EPYh0$5abDvv1maCsfr3S0dWvId1pT5ZEnYfYvdqW9U9sN0p8=",
+      "last_login": "2025-05-19T16:24:48.073Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-19T15:58:56.389Z",
+      "email": "alen.sargsyan00113@gmail.com",
+      "phone": null,
+      "telegram": null,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$uIYYnE0WV2VuwctcorggTv$i4BQt5AHBrs0sKYnV/OSROgD2oQAX/HNw0qeuJ0OV7M=",
+      "last_login": "2025-05-19T16:20:08.834Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-19T16:20:08.498Z",
+      "email": "alen@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
