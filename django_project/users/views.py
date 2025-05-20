@@ -111,8 +111,16 @@ def change_password(request):
 
 @login_required
 def reset_password(request):
+    # Генерация пароля: минимум 12 символов, включая буквы, цифры и спецсимволы
     characters = string.ascii_letters + string.digits + string.punctuation
-    random_password = ''.join(random.choice(characters) for _ in range(12))
+    random_password = (
+            random.choice(string.ascii_uppercase) +  # минимум 1 заглавная буква
+            random.choice(string.ascii_lowercase) +  # минимум 1 строчная буква
+            random.choice(string.digits) +  # минимум 1 цифра
+            random.choice(string.punctuation) +  # минимум 1 спецсимвол
+            ''.join(random.choice(characters) for _ in range(8))  # остальные символы
+    )
+    random_password = ''.join(random.sample(random_password, len(random_password)))  # перемешиваем
     request.user.set_password(random_password)
     request.user.save()
     send_mail(

@@ -1,18 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Питомец: {{ pet.name }}{% endblock %}
-
-{% block content %}
-<h1 class="text-2xl font-bold mb-4">{{ pet.name }}</h1>
-<p><strong>Вид:</strong> {{ pet.species }}</p>
-<p><strong>Возраст:</strong> {{ pet.age }}</p>
-<p><strong>Дата рождения:</strong> {{ pet.birth_date|default:"Не указана" }}</p>
-<p><strong>Описание:</strong> {{ pet.description }}</p>
-<p><strong>Владелец:</strong> {{ pet.owner.email }}</p>
-{% if user == pet.owner %}
-<div class="mt-4 space-x-2">
-    <a href="{% url 'blog:pet_update' pet.pk %}" class="text-blue-500 hover:underline">Редактировать</a>
-    <a href="{% url 'blog:pet_delete' pet.pk %}" class="text-red-500 hover:underline">Удалить</a>
-</div>
-{% endif %}
-{% endblock %}
+  {% block content %}
+    <h2>{{ pet.name }}</h2>
+    <p>Вид: {{ pet.get_species_display }}</p>
+    <p>Возраст: {{ pet.age }}</p>
+    <p>Дата рождения: {{ pet.birth_date }}</p>
+    <p>Описание: {{ pet.description }}</p>
+    <p>Владелец: {{ pet.owner.email }}</p>
+    <p>Создан: {{ pet.created_at|date:"d.m.Y H:i" }}</p>
+    <a href="{% url 'blog:pet_list' %}" class="btn btn-primary">Назад</a>
+  {% endblock %}

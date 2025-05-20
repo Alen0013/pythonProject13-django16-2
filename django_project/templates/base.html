@@ -1,36 +1,24 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Мой блог{% endblock %}</title>
-    {% load static %}
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{% static 'css/pet.css' %}" rel="stylesheet">
+    <title>Питомцы</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-blue-600 p-4 text-white">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="{% url 'blog:pet_list' %}" class="text-2xl font-bold">Мои питомцы</a>
-            <div class="space-x-4">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'users:profile' %}" class="hover:underline">Профиль</a>
-                    <a href="{% url 'users:logout' %}" class="hover:underline">Выйти</a>
-                {% else %}
-                    <a href="{% url 'users:login' %}" class="hover:underline">Войти</a>
-                    <a href="{% url 'users:register' %}" class="hover:underline">Регистрация</a>
-                {% endif %}
-            </div>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'blog:pet_list' %}">Питомцы</a>
+            {% if request.user.is_authenticated %}
+                <span class="navbar-text">Привет, {{ request.user.email }} ({{ request.user.role }})</span>
+                <a href="{% url 'users:profile' %}" class="btn btn-outline-info ms-2">Профиль</a>
+                <a href="{% url 'users:logout' %}" class="btn btn-outline-danger ms-2">Выход</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-outline-primary ms-2">Вход</a>
+                <a href="{% url 'users:register' %}" class="btn btn-outline-success ms-2">Регистрация</a>
+            {% endif %}
         </div>
     </nav>
-    <div class="container mx-auto mt-6">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <div class="container mt-4">
         {% block content %}
         {% endblock %}
     </div>

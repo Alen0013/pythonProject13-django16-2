@@ -1,29 +1,76 @@
 {% extends 'base.html' %}
-{% load pet_tags %}
-
-{% block title %}Список питомцев{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold mb-6">Список питомцев</h1>
-{% if user.is_authenticated %}
-    <a href="{% url 'blog:pet_create' %}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-600 transition duration-200">Добавить питомца</a>
-{% endif %}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {% for pet in pets %}
-    <div class="bg-white p-6 rounded-lg shadow-md pet-card">
-        <h2 class="text-xl font-semibold"><a href="{% url 'blog:pet_detail' pet.pk %}">{{ pet.name }}</a></h2>
-        <p class="text-gray-600">Вид: {{ pet.species }}</p>
-        <p class="text-gray-600">Возраст: {{ pet.age }} {% pet_age_label pet.age %}</p>
-        <p class="text-gray-600">Владелец: {{ pet.owner.email }}</p>
-        {% if user == pet.owner %}
-            <div class="mt-4 space-x-2">
-                <a href="{% url 'blog:pet_update' pet.pk %}" class="text-blue-500 hover:underline">Редактировать</a>
-                <a href="{% url 'blog:pet_delete' pet.pk %}" class="text-red-500 hover:underline">Удалить</a>
-            </div>
-        {% endif %}
+  <h2>Список питомцев</h2>
+  <form method="get" class="mb-3">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="species_filter">Фильтр по виду:</label>
+          <select name="species" id="species_filter" class="form-control">
+            <option value="">Все</option>
+            {% for value, label in species_choices %}
+              <option value="{{ value }}" {% if species_filter == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="age_min">Возраст от:</label>
+          <input type="number" name="age_min" id="age_min" class="form-control" value="{{ age_min }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="age_max">Возраст до:</label>
+          <input type="number" name="age_max" id="age_max" class="form-control" value="{{ age_max }}">
+        </div>
+      </div>
+      {% if request.user.is_authenticated and request.user.role == 'admin' %}
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="owner_filter">Владелец (email):</label>
+            <input type="text" name="owner" id="owner_filter" class="form-control" value="{{ owner_filter }}">
+          </div>
+        </div>
+      {% endif %}
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="created_at_filter">Дата создания:</label>
+          <select name="created_at" id="created_at_filter" class="form-control">
+            <option value="">Все</option>
+            <option value="last_month" {% if created_at_filter == 'last_month' %}selected{% endif %}>За последний месяц</option>
+          </select>
+        </div>
+      </div>
     </div>
-    {% empty %}
-    <p>Питомцев пока нет.</p>
+    <button type="submit" class="btn btn-primary mt-2">Фильтровать</button>
+  </form>
+  {% if pets %}
+    <ul>
+      {% for pet in pets %}
+        <li>
+          {{ pet.name }} (Вид: {{ pet.get_species_display }}, Возраст: {{ pet.age }})
+          - Владелец: {{ pet.owner.email }}
+          - Создан: {{ pet.created_at|date:"d.m.Y H:i" }}
+          - <a href="{% url 'blog:pet_detail' pet.pk %}">Подробнее</a>
+          {% if request.user == pet.owner or request.user.role == 'admin' %}
+            <a href="{% url 'blog:pet_update' pet.pk %}" class="ms-2">Редактировать</a>
+            <a href="{% url 'blog:pet_delete' pet.pk %}" class="ms-2">Удалить</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Нет питомцев для отображения.</p>
+  {% endif %}
+  {% if request.user.is_authenticated %}
+    <a href="{% url 'blog:pet_create' %}" class="btn btn-success">Добавить питомца</a>
+  {% endif %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
     {% endfor %}
-</div>
+  {% endif %}
 {% endblock %}

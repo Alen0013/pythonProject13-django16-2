@@ -10,6 +10,7 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        print(f"Created user: {email}, role={user.role}, is_staff={user.is_staff}, is_superuser={user.is_superuser}")
         return user
 
     def create_superuser(self, email, password, **extra_fields):
@@ -18,6 +19,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('first_name', 'Admin')
         extra_fields.setdefault('last_name', 'User')
+        extra_fields.setdefault('role', 'admin')
         return self.create_user(email, password, **extra_fields)
 
 
@@ -26,6 +28,15 @@ class User(AbstractUser):
     email = models.EmailField('email address', unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     telegram = models.CharField(max_length=100, blank=True, null=True)
+    role = models.CharField(
+        max_length=20,
+        choices=[
+            ('user', 'Обычный пользователь'),
+            ('moderator', 'Модератор'),
+            ('admin', 'Администратор'),
+        ],
+        default='user'
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
