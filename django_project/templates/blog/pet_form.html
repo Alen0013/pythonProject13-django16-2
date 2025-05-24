@@ -1,63 +1,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Добавить/редактировать питомца</h2>
+  <h2>{% if form.instance.pk %}Редактировать питомца{% else %}Добавить питомца{% endif %}</h2>
   <form method="post">
     {% csrf_token %}
-    <div class="form-group">
-      <label for="{{ form.name.id_for_label }}">Имя:</label>
-      {{ form.name }}
-      {% if form.name.errors %}
-        <div class="text-danger">{{ form.name.errors }}</div>
-      {% endif %}
+    <div class="card">
+      <div class="card-body">
+        <div class="form-group">
+          {{ form.as_p }}
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="{{ form.species.id_for_label }}">Вид:</label>
-      {{ form.species }}
-      {% if form.species.errors %}
-        <div class="text-danger">{{ form.species.errors }}</div>
-      {% endif %}
+
+    <h3>Родословная</h3>
+    {{ pedigree_formset.management_form }}
+    {% for form in pedigree_formset %}
+      <div class="card mb-3 pedigree-form">
+        <div class="card-header">
+          <h4>Родитель {% if forloop.counter0 == 0 %}1 (Мать){% else %}2 (Отец){% endif %}</h4>
+        </div>
+        <div class="card-body">
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+          {{ form.as_p }}
+          {% if form.instance.pk %}
+            <button type="button" class="btn btn-danger btn-sm delete-pedigree" data-pedigree-id="{{ form.instance.pk }}">Удалить</button>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{% url 'blog:pet_list' %}" class="btn btn-secondary ms-2">Отмена</a>
     </div>
-    <div class="form-group">
-      <label for="{{ form.age.id_for_label }}">Возраст:</label>
-      {{ form.age }}
-      {% if form.age.errors %}
-        <div class="text-danger">{{ form.age.errors }}</div>
-      {% endif %}
-    </div>
-    <div class="form-group">
-      <label for="{{ form.birth_date.id_for_label }}">Дата рождения:</label>
-      {{ form.birth_date }}
-      {% if form.birth_date.errors %}
-        <div class="text-danger">{{ form.birth_date.errors }}</div>
-      {% endif %}
-    </div>
-    <div class="form-group">
-      <label for="{{ form.description.id_for_label }}">Описание:</label>
-      {{ form.description }}
-      {% if form.description.errors %}
-        <div class="text-danger">{{ form.description.errors }}</div>
-      {% endif %}
-    </div>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
   </form>
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      <ul>
-        {% for field in form %}
-          {% for error in field.errors %}
-            <li>Ошибка в поле "{{ field.label }}": {{ error }}</li>
-          {% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
+
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
     {% endfor %}
   {% endif %}
 {% endblock %}

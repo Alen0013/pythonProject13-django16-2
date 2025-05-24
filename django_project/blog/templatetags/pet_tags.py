@@ -1,12 +1,15 @@
 from django import template
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 
-@register.simple_tag
+@register.filter
 def pet_age_label(age):
-    if age % 10 == 1 and age % 100 != 11:
-        return 'год'
-    elif 2 <= age % 10 <= 4 and (age % 100 < 10 or age % 100 >= 20):
-        return 'года'
+    if age < 1:
+        return _("месяц")
+    elif age == 1:
+        return _("год")
+    elif 2 <= age <= 4:
+        return _("года")
     else:
-        return 'лет'
+        return _("лет")

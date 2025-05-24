@@ -40,3 +40,24 @@ class Pet(models.Model):
     class Meta:
         verbose_name = 'Питомец'
         verbose_name_plural = 'Питомцы'
+
+
+class Pedigree(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='pedigrees', verbose_name='Питомец')
+    parent_type = models.CharField(
+        max_length=10,
+        choices=[('mother', 'Мать'), ('father', 'Отец')],
+        verbose_name='Тип родителя'
+    )
+    parent_name = models.CharField(max_length=100, verbose_name='Имя родителя')
+    breed = models.CharField(max_length=100, blank=True, verbose_name='Порода')
+    birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения родителя')
+    description = models.TextField(blank=True, verbose_name='Описание')
+
+    def __str__(self):
+        return f"{self.get_parent_type_display()} {self.parent_name} для {self.pet.name}"
+
+    class Meta:
+        verbose_name = 'Родословная'
+        verbose_name_plural = 'Родословные'
+

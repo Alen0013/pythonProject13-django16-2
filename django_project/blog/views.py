@@ -1,14 +1,25 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Pet
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from .models import Pet, Pedigree
 from .forms import PetForm
 from datetime import timedelta
 from django.utils import timezone
+from django.forms import inlineformset_factory
+from django.urls import reverse_lazy
+from django.conf import settings
+
+# Создаём formset для родословной
+PedigreeFormSet = inlineformset_factory(
+    Pet, Pedigree, fields=('parent_type', 'parent_name', 'breed', 'birth_date', 'description'),
+    extra=2, max_num=2, can_delete=True
+)
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetListView(ListView):
     model = Pet
     template_name = 'blog/pet_list.html'
@@ -49,6 +60,7 @@ class PetListView(ListView):
         return context
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetDetailView(DetailView):
     model = Pet
     template_name = 'blog/pet_detail.html'
@@ -60,10 +72,26 @@ class PetCreateView(LoginRequiredMixin, CreateView):
     form_class = PetForm
     template_name = 'blog/pet_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['pedigree_formset'] = PedigreeFormSet(self.request.POST, instance=self.object)
+        else:
+            context['pedigree_formset'] = PedigreeFormSet(instance=self.object)
+        return context
+
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        messages.success(self.request, 'Питомец успешно добавлен!')
-        return super().form_valid(form)
+        context = self.get_context_data()
+        pedigree_formset = context['pedigree_formset']
+        if pedigree_formset.is_valid():
+            self.object = form.save()
+            pedigree_formset.instance = self.object
+            pedigree_formset.save()
+            messages.success(self.request, 'Питомец и родословная успешно добавлены!')
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
@@ -74,6 +102,26 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = PetForm
     template_name = 'blog/pet_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['pedigree_formset'] = PedigreeFormSet(self.request.POST, instance=self.get_object())
+        else:
+            context['pedigree_formset'] = PedigreeFormSet(instance=self.get_object())
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        pedigree_formset = context['pedigree_formset']
+        if pedigree_formset.is_valid():
+            self.object = form.save()
+            pedigree_formset.instance = self.object
+            pedigree_formset.save()
+            messages.success(self.request, 'Питомец и родословная успешно обновлены!')
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
+
     def test_func(self):
         pet = self.get_object()
         return self.request.user == pet.owner or self.request.user.role == 'admin'
@@ -81,10 +129,6 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def handle_no_permission(self):
         messages.error(self.request, 'Вы не можете редактировать этого питомца!')
         return redirect('blog:pet_list')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Питомец успешно обновлён!')
-        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
