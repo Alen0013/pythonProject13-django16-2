@@ -4,7 +4,7 @@
     "pk": 4,
     "fields": {
       "password": "pbkdf2_sha256$600000$uKZMYSev98FoYDwSdRgUnI$ezl5rv2hOLJKrNqFGPpQPUdE5dyzhHW1f3eTo+pJNtY=",
-      "last_login": "2025-05-20T13:34:45.157Z",
+      "last_login": "2025-05-24T16:23:02.007Z",
       "is_superuser": true,
       "first_name": "Admin",
       "last_name": "User",
@@ -23,8 +23,8 @@
     "model": "users.user",
     "pk": 10,
     "fields": {
-      "password": "pbkdf2_sha256$600000$n65v49lj67AzNBcMgukUbq$71BKaOAbiopLpAslA0lSkQBf8BuHbtFeJ1OaE7FvWw8=",
-      "last_login": "2025-05-20T13:36:50.539Z",
+      "password": "pbkdf2_sha256$600000$SMWx2B2iPeU2HuTaYCbR8u$S+iylReTJPA+IL5u6JHDrWKDgbQqRqwyguekQvjGkiY=",
+      "last_login": "2025-05-24T16:23:35.233Z",
       "is_superuser": true,
       "first_name": "",
       "last_name": "",
@@ -32,8 +32,8 @@
       "is_active": true,
       "date_joined": "2025-05-20T13:33:10.242Z",
       "email": "admin@example.com",
-      "phone": null,
-      "telegram": null,
+      "phone": "+7 919 354 52 02",
+      "telegram": "@slimshady105",
       "role": "admin",
       "groups": [],
       "user_permissions": []
@@ -43,8 +43,8 @@
     "model": "users.user",
     "pk": 11,
     "fields": {
-      "password": "pbkdf2_sha256$600000$PnGh1YrisdpUGqDxl92BsP$NQxJBzRaO4SiUlJF0kYQ/29RtAcew+nvDmaZqr9Fk7E=",
-      "last_login": null,
+      "password": "pbkdf2_sha256$600000$056TJGyoLDgmC9xmhZ9PBM$osYAILcCLfRivjCY2KKqFUl+tYN9PwIXIzovv4NsEsQ=",
+      "last_login": "2025-05-20T13:38:53.178Z",
       "is_superuser": false,
       "first_name": "",
       "last_name": "",
@@ -63,7 +63,7 @@
     "model": "users.user",
     "pk": 12,
     "fields": {
-      "password": "pbkdf2_sha256$600000$11CQq9Yb2nUPELfFGLGOYP$y/vka9cxfVHY/jU5LRF/eaXnWlsvf88nWS1SsPcOiow=",
+      "password": "pbkdf2_sha256$600000$ZEfKa1C36UZ76G05QzuP87$OdCB6ixytjZEKqniFf39/6I1ro5UAIORa69UKTOjnaU=",
       "last_login": null,
       "is_superuser": false,
       "first_name": "",
@@ -72,6 +72,126 @@
       "is_active": true,
       "date_joined": "2025-05-20T13:33:10.589Z",
       "email": "user@example.com",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 13,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$C780PwZMFWMhgLkMvG62Ti$vggmrX8FOFX1X3G3bz0bZI/HygOXnTolsEreoFU5k3o=",
+      "last_login": "2025-05-24T16:28:27.399Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:28:27.161Z",
+      "email": "example@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 14,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$VhSSxNQ2Txiq4s3gnQizOZ$kU6ZhAHvfdZmnzsGEHqkKDl140JoteYY+A6WVUvlXyI=",
+      "last_login": "2025-05-24T16:28:53.449Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:28:53.233Z",
+      "email": "example123@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 15,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$68zPK211ftT4sIHKQuEgGy$/8bPYW+6qdjCAjpzohBurhtyWhOUVTinCJSN6UdqVxw=",
+      "last_login": "2025-05-24T16:29:50.314Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:29:50.098Z",
+      "email": "alen@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 16,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$dMJERJSSH8yXR8XQcv1Ye6$Xr0V5/dV63QgsfIaZpbs7fn4ZVGqsSr40/aqzImvBYY=",
+      "last_login": "2025-05-24T16:31:00.153Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:30:59.842Z",
+      "email": "alen001@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 17,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$IX0oq6VXcsjNujgeiNwsO2$56dAppmIDkKx0LkE5WntN1hdxsvIgiFicB39Ggr6FUo=",
+      "last_login": "2025-05-24T16:31:56.302Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:31:56.096Z",
+      "email": "mamamia@mail.ru",
+      "phone": null,
+      "telegram": null,
+      "role": "user",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 18,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$tJUnFCYhozEmF5E4ehCNTv$AaxIfTbguFRnZ6YOxYkZ3iVja3n4zI90mEgx26gENlI=",
+      "last_login": "2025-05-24T16:34:52.346Z",
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-05-24T16:34:52.028Z",
+      "email": "milan@mail.ru",
       "phone": null,
       "telegram": null,
       "role": "user",
