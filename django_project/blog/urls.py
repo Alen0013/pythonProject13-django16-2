@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:pk>/', views.PetDetailView.as_view(), name='pet_detail'),
     path('<int:pk>/update/', views.PetUpdateView.as_view(), name='pet_update'),
     path('<int:pk>/delete/', views.PetDeleteView.as_view(), name='pet_delete'),
+    path('<int:pk>/toggle-active/', views.PetToggleActiveView.as_view(), name='pet_toggle_active'),
 ]

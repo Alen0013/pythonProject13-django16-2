@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from blog.models import Pet
-from users.models import User  # Кастомная модель пользователя
+from users.models import User
 
 
 class Command(BaseCommand):
@@ -13,9 +13,9 @@ class Command(BaseCommand):
             return
 
         pets_data = [
-            {'name': 'Рекс', 'species': 'Собака', 'age': 3, 'description': 'Добрый и игривый пес'},
-            {'name': 'Мурка', 'species': 'Кот', 'age': 2, 'description': 'Спокойная кошка'},
-            {'name': 'Буцефал', 'species': 'Попугай', 'age': 1, 'description': 'Говорящий попугай'},
+            {'name': 'Рекс', 'species': 'dog', 'age': 3, 'description': 'Добрый и игривый пес', 'is_active': True},
+            {'name': 'Мурка', 'species': 'cat', 'age': 2, 'description': 'Спокойная кошка', 'is_active': True},
+            {'name': 'Буцефал', 'species': 'bird', 'age': 1, 'description': 'Говорящий попугай', 'is_active': True},
         ]
 
         for pet_data in pets_data:
@@ -24,7 +24,8 @@ class Command(BaseCommand):
                 species=pet_data['species'],
                 age=pet_data['age'],
                 description=pet_data['description'],
-                owner=owner
+                owner=owner,
+                is_active=pet_data['is_active']
             )
             self.stdout.write(self.style.SUCCESS(f'Successfully added pet: {pet_data["name"]}'))
 

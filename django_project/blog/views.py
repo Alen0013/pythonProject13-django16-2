@@ -12,14 +12,14 @@ from django.forms import inlineformset_factory
 from django.urls import reverse_lazy
 from django.conf import settings
 
-# Создаём formset для родословной
 PedigreeFormSet = inlineformset_factory(
     Pet, Pedigree, fields=('parent_type', 'parent_name', 'breed', 'birth_date', 'description'),
     extra=2, max_num=2, can_delete=True
 )
 
 
-@method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
+# Временно отключено кэширование
+# @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetListView(ListView):
     model = Pet
     template_name = 'blog/pet_list.html'
@@ -27,6 +27,8 @@ class PetListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if not (self.request.user.is_authenticated and self.request.user.role in ['admin', 'moderator']):
+            queryset = queryset.filter(is_active=True)
         species_filter = self.request.GET.get('species', '')
         if species_filter:
             queryset = queryset.filter(species=species_filter)
@@ -60,11 +62,18 @@ class PetListView(ListView):
         return context
 
 
-@method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
+# Временно отключено кэширование
+# @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetDetailView(DetailView):
     model = Pet
     template_name = 'blog/pet_detail.html'
     context_object_name = 'pet'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not (self.request.user.is_authenticated and self.request.user.role in ['admin', 'moderator']):
+            queryset = queryset.filter(is_active=True)
+        return queryset
 
 
 class PetCreateView(LoginRequiredMixin, CreateView):
@@ -150,6 +159,33 @@ class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         messages.success(request, 'Питомец успешно удалён!')
         return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('blog:pet_list')
+
+
+class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Pet
+    fields = ['is_active']
+    template_name = 'blog/pet_confirm_toggle_active.html'
+    context_object_name = 'pet'
+
+    def test_func(self):
+        return self.request.user.role in ['admin', 'moderator']
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'У вас нет прав для изменения статуса активности!')
+        return redirect('blog:pet_list')
+
+    def form_valid(self, form):
+        pet = self.get_object()
+        pet.moderated_by = self.request.user
+        pet.save()
+        if pet.is_active:
+            messages.success(self.request, f'Питомец {pet.name} активирован!')
+        else:
+            messages.success(self.request, f'Питомец {pet.name} деактивирован!')
+        return redirect('blog:pet_list')
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')

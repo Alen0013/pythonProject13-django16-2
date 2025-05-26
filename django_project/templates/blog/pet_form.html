@@ -1,47 +1,65 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>{% if form.instance.pk %}Редактировать питомца{% else %}Добавить питомца{% endif %}</h2>
-  <form method="post">
-    {% csrf_token %}
-    <div class="card">
-      <div class="card-body">
-        <div class="form-group">
-          {{ form.as_p }}
-        </div>
-      </div>
-    </div>
-
-    <h3>Родословная</h3>
-    {{ pedigree_formset.management_form }}
-    {% for form in pedigree_formset %}
-      <div class="card mb-3 pedigree-form">
-        <div class="card-header">
-          <h4>Родитель {% if forloop.counter0 == 0 %}1 (Мать){% else %}2 (Отец){% endif %}</h4>
-        </div>
+  {% if request.user.role != 'moderator' %}
+    <h2>{% if form.instance.pk %}Редактировать питомца{% else %}Добавить питомца{% endif %}</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div class="card">
         <div class="card-body">
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
-          {{ form.as_p }}
-          {% if form.instance.pk %}
-            <button type="button" class="btn btn-danger btn-sm delete-pedigree" data-pedigree-id="{{ form.instance.pk }}">Удалить</button>
-          {% endif %}
+          <div class="form-group">
+            {{ form.as_p }}
+          </div>
         </div>
       </div>
-    {% endfor %}
 
-    <div class="mt-3">
-      <button type="submit" class="btn btn-primary">Сохранить</button>
-      <a href="{% url 'blog:pet_list' %}" class="btn btn-secondary ms-2">Отмена</a>
-    </div>
-  </form>
+      <h3>Родословная</h3>
+      {{ pedigree_formset.management_form }}
+      {% for form in pedigree_formset %}
+        <div class="card mb-3 pedigree-form">
+          <div class="card-header">
+            <h4>Родитель {% if forloop.counter0 == 0 %}1 (Мать){% else %}2 (Отец){% endif %}</h4>
+          </div>
+          <div class="card-body">
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+            {{ form.as_p }}
+            {% if form.instance.pk %}
+              <button type="button" class="btn btn-danger btn-sm delete-pedigree" data-pedigree-id="{{ form.instance.pk }}">Удалить</button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
-    {% endfor %}
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'blog:pet_list' %}" class="btn btn-secondary ms-2">Отмена</a>
+      </div>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-3">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <script>
+      document.querySelectorAll('.delete-pedigree').forEach(button => {
+        button.addEventListener('click', function() {
+          const pedigreeId = this.getAttribute('data-pedigree-id');
+          const form = this.closest('.pedigree-form').querySelector('input[name$="DELETE"]');
+          if (form) {
+            form.value = '1';
+            this.closest('.pedigree-form').style.display = 'none';
+          }
+        });
+      });
+    </script>
+  {% else %}
+    <div class="alert alert-warning">У вас нет прав для создания или редактирования питомцев.</div>
+    <a href="{% url 'blog:pet_list' %}" class="btn btn-primary">Вернуться к списку</a>
   {% endif %}
 {% endblock %}

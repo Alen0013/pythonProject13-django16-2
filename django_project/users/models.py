@@ -37,6 +37,7 @@ class User(AbstractUser):
         ],
         default='user'
     )
+    is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -45,3 +46,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    def get_role_display(self):
+        return dict(self._meta.get_field('role').choices).get(self.role, 'Не определено')

@@ -21,6 +21,11 @@ class Pet(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    is_active = models.BooleanField(default=True, verbose_name='Активен')  # Новое поле
+    moderated_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='moderated_pets', verbose_name='Модерирован'
+    )
 
     def __str__(self):
         return self.name
@@ -60,4 +65,3 @@ class Pedigree(models.Model):
     class Meta:
         verbose_name = 'Родословная'
         verbose_name_plural = 'Родословные'
-
