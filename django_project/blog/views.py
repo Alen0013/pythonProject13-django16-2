@@ -18,6 +18,7 @@ PedigreeFormSet = inlineformset_factory(
     extra=2, max_num=2, can_delete=True
 )
 
+
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetListView(ListView):
@@ -61,6 +62,7 @@ class PetListView(ListView):
         context['species_choices'] = Pet.SPECIES_CHOICES
         return context
 
+
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetDetailView(DetailView):
@@ -88,6 +90,7 @@ class PetDetailView(DetailView):
                 )
             obj.save()
         return obj
+
 
 class PetCreateView(LoginRequiredMixin, CreateView):
     model = Pet
@@ -117,6 +120,7 @@ class PetCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
+
 
 class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -162,6 +166,7 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 form.fields[field].required = False
         return form
 
+
 class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Pet
     template_name = 'blog/pet_confirm_delete.html'
@@ -182,6 +187,7 @@ class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
 
+
 class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
     fields = ['is_active']
@@ -197,6 +203,7 @@ class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         pet = self.get_object()
+        pet.is_active = not pet.is_active  # Инвертируем значение
         pet.moderated_by = self.request.user
         pet.save()
         if pet.is_active:

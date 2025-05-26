@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Изменить статус питомца</h2>
-  <p>Вы уверены, что хотите {% if pet.is_active %}деактивировать{% else %}активировать{% endif %} питомца {{ pet.name }}?</p>
+  <h2>Изменение статуса питомца</h2>
+  <p>Вы уверены, что хотите {% if pet.is_active %}деактивировать{% else %}активировать{% endif %} питомца "{{ pet.name }}"?</p>
   <form method="post">
     {% csrf_token %}
-    <input type="hidden" name="is_active" value="{% if pet.is_active %}0{% else %}1{% endif %}">
-    <button type="submit" class="btn btn-warning">{% if pet.is_active %}Деактивировать{% else %}Активировать{% endif %}</button>
-    <a href="{% url 'blog:pet_list' %}" class="btn btn-secondary ms-2">Отмена</a>
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-{% if pet.is_active %}danger{% else %}success{% endif %}">
+      {% if pet.is_active %}Деактивировать{% else %}Активировать{% endif %}
+    </button>
+    <a href="{% url 'blog:pet_list' %}" class="btn btn-secondary">Отмена</a>
   </form>
 {% endblock %}
