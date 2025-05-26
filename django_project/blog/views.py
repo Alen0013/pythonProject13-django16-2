@@ -18,13 +18,13 @@ PedigreeFormSet = inlineformset_factory(
     extra=2, max_num=2, can_delete=True
 )
 
-
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetListView(ListView):
     model = Pet
     template_name = 'blog/pet_list.html'
     context_object_name = 'pets'
+    paginate_by = 5  # Пагинация: 5 записей на страницу
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -62,7 +62,6 @@ class PetListView(ListView):
         context['species_choices'] = Pet.SPECIES_CHOICES
         return context
 
-
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetDetailView(DetailView):
@@ -72,7 +71,6 @@ class PetDetailView(DetailView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # Отзывы видны всем, независимо от статуса активности
         return queryset
 
     def get_object(self, queryset=None):
@@ -92,11 +90,10 @@ class PetDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['reviews'] = self.object.reviews.all()  # Отзывы видны всем
+        context['reviews'] = self.object.reviews.all()
         if self.request.user.is_authenticated and self.request.user != self.object.owner:
             context['review_form'] = ReviewForm()
         return context
-
 
 class PetCreateView(LoginRequiredMixin, CreateView):
     model = Pet
@@ -126,7 +123,6 @@ class PetCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
-
 
 class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -172,7 +168,6 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 form.fields[field].required = False
         return form
 
-
 class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Pet
     template_name = 'blog/pet_confirm_delete.html'
@@ -192,7 +187,6 @@ class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
-
 
 class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -221,7 +215,6 @@ class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
 
-
 class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     form_class = ReviewForm
@@ -241,3 +234,15 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_detail', kwargs={'pk': self.kwargs['pet_pk']})
+
+class ReviewDetailView(DetailView):
+    model = Review
+    template_name = 'blog/review_detail.html'
+    context_object_name = 'review'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pet'] = self.object.pet
+        return context

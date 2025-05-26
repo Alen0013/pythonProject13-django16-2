@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from users.models import User
 from datetime import date
+import uuid
 
 class Pet(models.Model):
     SPECIES_CHOICES = [
@@ -75,6 +76,12 @@ class Review(models.Model):
         verbose_name='Оценка',
         default=1
     )
+    slug = models.SlugField(max_length=50, unique=True, blank=True, verbose_name='Slug')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = str(uuid.uuid4())[:8]  # Генерируем случайный slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Отзыв от {self.author.email} на {self.pet.name}'
