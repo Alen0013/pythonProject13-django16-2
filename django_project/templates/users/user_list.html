@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Список пользователей</h2>
+  {% if users %}
+    <div class="list-group">
+      {% for user in users %}
+        <a href="{% url 'users:user_detail' user.pk %}" class="list-group-item list-group-item-action">
+          {{ user.email }} ({{ user.get_role_display }})
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">Нет пользователей для отображения.</p>
+  {% endif %}
+{% endblock %}

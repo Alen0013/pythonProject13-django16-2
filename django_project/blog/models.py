@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from users.models import User
 from datetime import date
 
-
 class Pet(models.Model):
     SPECIES_CHOICES = [
         ('dog', 'Собака'),
@@ -47,7 +46,6 @@ class Pet(models.Model):
         verbose_name = 'Питомец'
         verbose_name_plural = 'Питомцы'
 
-
 class Pedigree(models.Model):
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='pedigrees', verbose_name='Питомец')
     parent_type = models.CharField(
@@ -66,3 +64,21 @@ class Pedigree(models.Model):
     class Meta:
         verbose_name = 'Родословная'
         verbose_name_plural = 'Родословные'
+
+class Review(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='reviews', verbose_name='Питомец')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    text = models.TextField(verbose_name='Текст отзыва')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    rating = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(1, 6)],
+        verbose_name='Оценка',
+        default=1
+    )
+
+    def __str__(self):
+        return f'Отзыв от {self.author.email} на {self.pet.name}'
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'

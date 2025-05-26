@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
-from django.views.generic import View, UpdateView, TemplateView
+from django.views.generic import View, UpdateView, TemplateView, ListView, DetailView
 from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, UserUpdateForm
 from django.core.mail import send_mail
@@ -11,9 +11,9 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 User = get_user_model()
-
 
 class RegisterView(View):
     form_class = CustomUserCreationForm
@@ -32,18 +32,15 @@ class RegisterView(View):
             return redirect('blog:pet_list')
         return render(request, self.template_name, {'form': form})
 
-
 class CustomLoginView(LoginView):
     form_class = CustomAuthenticationForm
     template_name = 'users/login.html'
-
 
 class ProfileView(View):
     template_name = 'users/profile.html'
 
     def get(self, request):
         return render(request, self.template_name)
-
 
 class UpdateProfileView(UpdateView):
     form_class = UserUpdateForm
@@ -56,7 +53,6 @@ class UpdateProfileView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Профиль успешно обновлён!')
         return super().form_valid(form)
-
 
 class ChangePasswordView(View):
     template_name = 'users/change_password.html'
@@ -83,7 +79,6 @@ class ChangePasswordView(View):
         login(request, request.user)
         return redirect('users:profile')
 
-
 class ResetPasswordView(View):
     template_name = 'users/reset_password_confirm.html'
 
@@ -106,21 +101,42 @@ class ResetPasswordView(View):
         messages.success(request, 'Новый пароль отправлен на ваш email.')
         return redirect('users:profile')
 
-
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'users/reset_password.html'
     email_template_name = 'users/password_reset_email.html'
     success_url = reverse_lazy('users:login')
 
-
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'users/reset_password_confirm.html'
     success_url = reverse_lazy('users:login')
 
-
 class LogoutView(View):
     def get(self, request):
         logout(request)
-        request.session.flush()  # Очищаем сессию
+        request.session.flush()
         messages.success(request, 'Вы успешно вышли из системы.')
+        return redirect('blog:pet_list')
+
+class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = User
+    template_name = 'users/user_list.html'
+    context_object_name = 'users'
+
+    def test_func(self):
+        return self.request.user.role in ['admin', 'moderator']
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'У вас нет прав для просмотра списка пользователей!')
+        return redirect('blog:pet_list')
+
+class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = User
+    template_name = 'users/user_detail.html'
+    context_object_name = 'user'
+
+    def test_func(self):
+        return self.request.user.role in ['admin', 'moderator'] or self.request.user == self.get_object()
+
+    def handle_no_permission(self):
+        messages.error(self.request, 'У вас нет прав для просмотра этого профиля!')
         return redirect('blog:pet_list')

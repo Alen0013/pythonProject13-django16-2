@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+Профиль пользователя: {{ user.email }}
+Роль: {{ user.get_role_display }}
+
+Имя: {{ user.first_name }} {{ user.last_name }}
+
+Телефон: {{ user.phone|default:"Не указан" }}
+
+Telegram: {{ user.telegram|default:"Не указан" }}
+
+Дата регистрации: {{ user.date_joined|date:"d.m.Y H:i" }}
+
+{% if user.is_active %}
+Статус: Активен
+
+{% else %}
+Статус: Неактивен
+
+{% endif %}
+Назад к списку {% endblock %}

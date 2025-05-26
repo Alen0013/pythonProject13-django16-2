@@ -4,8 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-from .models import Pet, Pedigree
-from .forms import PetForm
+from .models import Pet, Pedigree, Review
+from .forms import PetForm, ReviewForm
 from datetime import timedelta
 from django.utils import timezone
 from django.forms import inlineformset_factory
@@ -72,8 +72,7 @@ class PetDetailView(DetailView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        if not (self.request.user.is_authenticated and self.request.user.role in ['admin', 'moderator']):
-            queryset = queryset.filter(is_active=True)
+        # Отзывы видны всем, независимо от статуса активности
         return queryset
 
     def get_object(self, queryset=None):
@@ -90,6 +89,13 @@ class PetDetailView(DetailView):
                 )
             obj.save()
         return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['reviews'] = self.object.reviews.all()  # Отзывы видны всем
+        if self.request.user.is_authenticated and self.request.user != self.object.owner:
+            context['review_form'] = ReviewForm()
+        return context
 
 
 class PetCreateView(LoginRequiredMixin, CreateView):
@@ -203,7 +209,7 @@ class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         pet = self.get_object()
-        pet.is_active = not pet.is_active  # Инвертируем значение
+        pet.is_active = not pet.is_active
         pet.moderated_by = self.request.user
         pet.save()
         if pet.is_active:
@@ -214,3 +220,24 @@ class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
+
+
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'blog/review_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pet = Pet.objects.get(pk=self.kwargs['pet_pk'])
+        context['pet'] = pet
+        return context
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.pet_id = self.kwargs['pet_pk']
+        messages.success(self.request, 'Отзыв успешно добавлен!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('blog:pet_detail', kwargs={'pk': self.kwargs['pet_pk']})

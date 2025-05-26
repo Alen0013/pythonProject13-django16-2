@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pet
+from .models import Pet, Review
 from datetime import date
 import re
 from django.utils.translation import gettext_lazy as _
@@ -14,12 +14,15 @@ class PetForm(forms.ModelForm):
 
     class Meta:
         model = Pet
-        fields = ['name', 'species', 'age', 'birth_date', 'description']
+        fields = ['name', 'species', 'age', 'birth_date', 'description', 'is_active', 'owner', 'view_count']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Enter name')}),
             'age': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': _('Enter age')}),
             'birth_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Enter description')}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'owner': forms.Select(attrs={'class': 'form-control'}),
+            'view_count': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
         labels = {
             'name': _('Name'),
@@ -27,6 +30,9 @@ class PetForm(forms.ModelForm):
             'age': _('Age'),
             'birth_date': _('Birth Date'),
             'description': _('Description'),
+            'is_active': _('Active'),
+            'owner': _('Owner'),
+            'view_count': _('View Count'),
         }
 
     def clean_name(self):
@@ -69,8 +75,36 @@ class PetForm(forms.ModelForm):
         if birth_date and age:
             today = date.today()
             calculated_age = today.year - birth_date.year - (
-                        (today.month, today.day) < (birth_date.month, birth_date.day))
+                    (today.month, today.day) < (birth_date.month, birth_date.day))
             if calculated_age != age:
                 self.add_error(None,
                                _(f"Age ({age}) does not match birth date ({birth_date}). Calculated age: {calculated_age}."))
         return cleaned_data
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['text', 'rating']
+        widgets = {
+            'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Enter your review')}),
+            'rating': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'text': _('Review Text'),
+            'rating': _('Rating'),
+        }
+
+    def clean_text(self):
+        text = self.cleaned_data.get('text')
+        if not text or not text.strip():
+            raise forms.ValidationError(_('Review text cannot be empty.'))
+        if len(text) > 1000:
+            raise forms.ValidationError(_('Review text cannot exceed 1000 characters.'))
+        return text
+
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if rating is None or rating < 1 or rating > 5:
+            raise forms.ValidationError(_('Rating must be between 1 and 5.'))
+        return rating

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Оставить отзыв на {{ pet.name }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Отправить</button>
+    <a href="{% url 'blog:pet_detail' pet.pk %}" class="btn btn-secondary ms-2">Отмена</a>
+  </form>
+{% endblock %}
