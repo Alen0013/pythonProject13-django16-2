@@ -11,6 +11,7 @@
       <p><strong>Описание:</strong> {{ pet.description|default:"Нет описания" }}</p>
       <p><strong>Владелец:</strong> {{ pet.owner.email }}</p>
       <p><strong>Статус:</strong> {% if pet.is_active %}Активен{% else %}Неактивен{% endif %}</p>
+      <p><strong>Просмотров:</strong> {{ pet.view_count }}</p>
       {% if pet.moderated_by and request.user.is_authenticated and request.user.role in 'admin,moderator' %}
         <p><strong>Модерирован:</strong> {{ pet.moderated_by.email }}</p>
       {% endif %}

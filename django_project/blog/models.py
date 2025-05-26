@@ -21,11 +21,12 @@ class Pet(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
-    is_active = models.BooleanField(default=True, verbose_name='Активен')  # Новое поле
+    is_active = models.BooleanField(default=True, verbose_name='Активен')
     moderated_by = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='moderated_pets', verbose_name='Модерирован'
     )
+    view_count = models.PositiveIntegerField(default=0, verbose_name='Количество просмотров')
 
     def __str__(self):
         return self.name

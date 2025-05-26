@@ -11,12 +11,12 @@ from django.utils import timezone
 from django.forms import inlineformset_factory
 from django.urls import reverse_lazy
 from django.conf import settings
+from django.core.mail import send_mail
 
 PedigreeFormSet = inlineformset_factory(
     Pet, Pedigree, fields=('parent_type', 'parent_name', 'breed', 'birth_date', 'description'),
     extra=2, max_num=2, can_delete=True
 )
-
 
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
@@ -61,7 +61,6 @@ class PetListView(ListView):
         context['species_choices'] = Pet.SPECIES_CHOICES
         return context
 
-
 # Временно отключено кэширование
 # @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
 class PetDetailView(DetailView):
@@ -75,6 +74,20 @@ class PetDetailView(DetailView):
             queryset = queryset.filter(is_active=True)
         return queryset
 
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if self.request.user.is_authenticated and obj.owner != self.request.user:
+            obj.view_count += 1
+            if obj.view_count % 100 == 0 and obj.owner:
+                send_mail(
+                    'Достигнуто 100 просмотров!',
+                    f'Ваш питомец {obj.name} набрал {obj.view_count} просмотров.',
+                    settings.EMAIL_HOST_USER,
+                    [obj.owner.email],
+                    fail_silently=True,
+                )
+            obj.save()
+        return obj
 
 class PetCreateView(LoginRequiredMixin, CreateView):
     model = Pet
@@ -104,7 +117,6 @@ class PetCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
-
 
 class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -142,6 +154,13 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        if self.request.user.role not in ['admin', 'moderator']:
+            for field in ['is_active', 'owner', 'view_count']:
+                form.fields[field].widget = form.fields[field].hidden_widget()
+                form.fields[field].required = False
+        return form
 
 class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Pet
@@ -162,7 +181,6 @@ class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
-
 
 class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
