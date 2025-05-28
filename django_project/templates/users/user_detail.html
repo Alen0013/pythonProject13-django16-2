@@ -1,20 +1,20 @@
-{% extends 'base.html' %} {% block content %}
-Профиль пользователя: {{ user.email }}
-Роль: {{ user.get_role_display }}
+{% extends 'base.html' %}
 
-Имя: {{ user.first_name }} {{ user.last_name }}
-
-Телефон: {{ user.phone|default:"Не указан" }}
-
-Telegram: {{ user.telegram|default:"Не указан" }}
-
-Дата регистрации: {{ user.date_joined|date:"d.m.Y H:i" }}
-
-{% if user.is_active %}
-Статус: Активен
-
-{% else %}
-Статус: Неактивен
-
-{% endif %}
-Назад к списку {% endblock %}
+{% block content %}
+  <h2>Профиль пользователя: {{ user.email }}</h2>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>Роль:</strong> {{ user.get_role_display }}</p>
+      <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+      <p><strong>Телефон:</strong> {{ user.phone|default:"Не указан" }}</p>
+      <p><strong>Telegram:</strong> {{ user.telegram|default:"Не указан" }}</p>
+      <p><strong>Дата регистрации:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+      {% if user.is_active %}
+        <p><strong>Статус:</strong> Активен</p>
+      {% else %}
+        <p><strong>Статус:</strong> Неактивен</p>
+      {% endif %}
+    </div>
+  </div>
+  <a href="{% url 'users:user_list' %}" class="btn btn-primary mt-3">Назад к списку</a>
+{% endblock %}

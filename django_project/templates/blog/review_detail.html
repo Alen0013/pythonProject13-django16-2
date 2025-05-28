@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Отзыв на {{ pet.name }}</h2>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>Автор:</strong> {{ review.author.email }}</p>
+      <p><strong>Оценка:</strong> {{ review.rating }} / 5</p>
+      <p><strong>Текст:</strong> {{ review.text }}</p>
+      <p><small>Дата: {{ review.created_at|date:"d.m.Y H:i" }}</small></p>
+    </div>
+  </div>
+  <a href="{% url 'blog:pet_detail' pet.pk %}" class="btn btn-primary mt-3">Назад к питомцу</a>
+{% endblock %}

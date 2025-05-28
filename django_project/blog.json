@@ -10,7 +10,10 @@
       "description": "счсчс",
       "owner": 4,
       "created_at": "2025-05-19T17:47:13.319Z",
-      "updated_at": "2025-05-19T19:42:51.936Z"
+      "updated_at": "2025-05-26T12:08:33.715Z",
+      "is_active": true,
+      "moderated_by": 11,
+      "view_count": 3
     }
   },
   {
@@ -21,24 +24,112 @@
       "species": "dog",
       "age": 1,
       "birth_date": null,
-      "description": "выыыыыыыыыыыыыы",
+      "description": "выыыыыыыыыыыыыв",
       "owner": 4,
       "created_at": "2025-05-19T18:34:25.017Z",
-      "updated_at": "2025-05-20T13:34:09.846Z"
+      "updated_at": "2025-05-26T12:35:31.983Z",
+      "is_active": true,
+      "moderated_by": 11,
+      "view_count": 5
     }
   },
   {
     "model": "blog.pet",
-    "pk": 5,
+    "pk": 8,
     "fields": {
-      "name": "Иван",
-      "species": "fish",
+      "name": "Пеша",
+      "species": "bird",
       "age": 1,
-      "birth_date": "2024-02-28",
-      "description": "1",
+      "birth_date": "2024-01-21",
+      "description": "аыавыаываааааааааааааааааааааа",
+      "owner": 10,
+      "created_at": "2025-05-21T17:16:00.066Z",
+      "updated_at": "2025-05-26T12:35:20.167Z",
+      "is_active": true,
+      "moderated_by": 10,
+      "view_count": 6
+    }
+  },
+  {
+    "model": "blog.pet",
+    "pk": 9,
+    "fields": {
+      "name": "Рекси",
+      "species": "dog",
+      "age": 1,
+      "birth_date": "2024-01-08",
+      "description": "авввавава",
+      "owner": 10,
+      "created_at": "2025-05-24T17:36:46.274Z",
+      "updated_at": "2025-05-26T12:33:53.730Z",
+      "is_active": true,
+      "moderated_by": 11,
+      "view_count": 10
+    }
+  },
+  {
+    "model": "blog.pet",
+    "pk": 10,
+    "fields": {
+      "name": "Ренно",
+      "species": "dog",
+      "age": 1,
+      "birth_date": "2024-01-08",
+      "description": "аррррррррррр",
       "owner": 4,
-      "created_at": "2025-05-19T18:38:33.113Z",
-      "updated_at": "2025-05-19T19:42:51.936Z"
+      "created_at": "2025-05-26T11:51:08.103Z",
+      "updated_at": "2025-05-26T12:19:27.300Z",
+      "is_active": true,
+      "moderated_by": 11,
+      "view_count": 4
+    }
+  },
+  {
+    "model": "blog.pedigree",
+    "pk": 1,
+    "fields": {
+      "pet": 9,
+      "parent_type": "mother",
+      "parent_name": "Мама",
+      "breed": "Собака",
+      "birth_date": "2024-01-08",
+      "description": "паапап"
+    }
+  },
+  {
+    "model": "blog.pedigree",
+    "pk": 2,
+    "fields": {
+      "pet": 10,
+      "parent_type": "mother",
+      "parent_name": "Мама",
+      "breed": "Собака",
+      "birth_date": "2024-01-08",
+      "description": ""
+    }
+  },
+  {
+    "model": "blog.review",
+    "pk": 1,
+    "fields": {
+      "pet": 9,
+      "author": 4,
+      "text": "хороший песик",
+      "created_at": "2025-05-26T12:22:31.601Z",
+      "rating": 5,
+      "slug": ""
+    }
+  },
+  {
+    "model": "blog.review",
+    "pk": 2,
+    "fields": {
+      "pet": 8,
+      "author": 4,
+      "text": "вфывыфвыф",
+      "created_at": "2025-05-26T12:33:08.937Z",
+      "rating": 1,
+      "slug": "temporary-slug"
     }
   }
 ]

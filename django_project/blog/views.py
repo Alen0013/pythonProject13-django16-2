@@ -18,18 +18,24 @@ PedigreeFormSet = inlineformset_factory(
     extra=2, max_num=2, can_delete=True
 )
 
-# Временно отключено кэширование
-# @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
+
 class PetListView(ListView):
     model = Pet
     template_name = 'blog/pet_list.html'
     context_object_name = 'pets'
-    paginate_by = 5  # Пагинация: 5 записей на страницу
+    paginate_by = 5  # Пагинация: 5 записей на страницу для каждого списка
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        # Базовая фильтрация для неадминистраторов и не модераторов
         if not (self.request.user.is_authenticated and self.request.user.role in ['admin', 'moderator']):
             queryset = queryset.filter(is_active=True)
+
+        # Применяем фильтры
+        name_filter = self.request.GET.get('name', '')
+        if name_filter:
+            queryset = queryset.filter(name__icontains=name_filter)
+
         species_filter = self.request.GET.get('species', '')
         if species_filter:
             queryset = queryset.filter(species=species_filter)
@@ -49,10 +55,36 @@ class PetListView(ListView):
         if created_at_filter == 'last_month':
             one_month_ago = timezone.now() - timedelta(days=30)
             queryset = queryset.filter(created_at__gte=one_month_ago)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Получаем все питомцев для фильтрации
+        base_queryset = self.get_queryset()
+
+        # Разделяем на активных и неактивных
+        active_pets = base_queryset.filter(is_active=True)
+        inactive_pets = base_queryset.filter(is_active=False)
+
+        # Пагинация для активных питомцев
+        paginator_active = self.get_paginator(active_pets, self.paginate_by, orphans=self.get_paginate_orphans(),
+                                              allow_empty_first_page=self.get_allow_empty())
+        page_number_active = self.request.GET.get('page_active', 1)
+        page_obj_active = paginator_active.get_page(page_number_active)
+        context['active_pets'] = page_obj_active
+        context['is_paginated_active'] = page_obj_active.has_other_pages()
+
+        # Пагинация для неактивных питомцев
+        paginator_inactive = self.get_paginator(inactive_pets, self.paginate_by, orphans=self.get_paginate_orphans(),
+                                                allow_empty_first_page=self.get_allow_empty())
+        page_number_inactive = self.request.GET.get('page_inactive', 1)
+        page_obj_inactive = paginator_inactive.get_page(page_number_inactive)
+        context['inactive_pets'] = page_obj_inactive
+        context['is_paginated_inactive'] = page_obj_inactive.has_other_pages()
+
+        # Передаём фильтры в контекст
+        context['name_filter'] = self.request.GET.get('name', '')
         context['species_filter'] = self.request.GET.get('species', '')
         context['age_min'] = self.request.GET.get('age_min', '')
         context['age_max'] = self.request.GET.get('age_max', '')
@@ -62,8 +94,7 @@ class PetListView(ListView):
         context['species_choices'] = Pet.SPECIES_CHOICES
         return context
 
-# Временно отключено кэширование
-# @method_decorator(cache_page(settings.CACHE_TTL), name='dispatch')
+
 class PetDetailView(DetailView):
     model = Pet
     template_name = 'blog/pet_detail.html'
@@ -95,6 +126,7 @@ class PetDetailView(DetailView):
             context['review_form'] = ReviewForm()
         return context
 
+
 class PetCreateView(LoginRequiredMixin, CreateView):
     model = Pet
     form_class = PetForm
@@ -123,6 +155,7 @@ class PetCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
+
 
 class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -168,6 +201,7 @@ class PetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 form.fields[field].required = False
         return form
 
+
 class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Pet
     template_name = 'blog/pet_confirm_delete.html'
@@ -187,6 +221,7 @@ class PetDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
+
 
 class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Pet
@@ -215,6 +250,7 @@ class PetToggleActiveView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('blog:pet_list')
 
+
 class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     form_class = ReviewForm
@@ -234,6 +270,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:pet_detail', kwargs={'pk': self.kwargs['pet_pk']})
+
 
 class ReviewDetailView(DetailView):
     model = Review

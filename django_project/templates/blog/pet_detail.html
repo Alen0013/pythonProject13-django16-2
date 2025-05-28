@@ -9,7 +9,7 @@
       <p><strong>Возраст:</strong> {{ pet.age }} {{ pet.age|pet_age_label }}</p>
       <p><strong>Дата рождения:</strong> {{ pet.birth_date|date:"d.m.Y" }}</p>
       <p><strong>Описание:</strong> {{ pet.description|default:"Нет описания" }}</p>
-      <p><strong>Владелец:</strong> {{ pet.owner.email }}</p>
+      <p><strong>Владелец:</strong> <a href="{% url 'users:user_detail' pet.owner.pk %}">{{ pet.owner.email }}</a></p>
       <p><strong>Статус:</strong> {% if pet.is_active %}Активен{% else %}Неактивен{% endif %}</p>
       <p><strong>Просмотров:</strong> {{ pet.view_count }}</p>
       {% if pet.moderated_by and request.user.is_authenticated and request.user.role in 'admin,moderator' %}
@@ -51,6 +51,7 @@
               <p><strong>Оценка:</strong> {{ review.rating }} / 5</p>
               <p><strong>Текст:</strong> {{ review.text }}</p>
               <p><small>Дата: {{ review.created_at|date:"d.m.Y H:i" }}</small></p>
+              <a href="{% url 'blog:review_detail' review.slug %}" class="btn btn-info btn-sm">Подробнее</a>
             </div>
           </div>
         {% endfor %}

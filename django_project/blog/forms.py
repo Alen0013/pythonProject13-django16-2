@@ -4,7 +4,6 @@ from datetime import date
 import re
 from django.utils.translation import gettext_lazy as _
 
-
 class PetForm(forms.ModelForm):
     species = forms.ChoiceField(
         choices=[('', '---------')] + Pet.SPECIES_CHOICES,
@@ -81,19 +80,25 @@ class PetForm(forms.ModelForm):
                                _(f"Age ({age}) does not match birth date ({birth_date}). Calculated age: {calculated_age}."))
         return cleaned_data
 
-
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['text', 'rating']
+        fields = ['text', 'rating', 'slug']
         widgets = {
             'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Enter your review')}),
             'rating': forms.Select(attrs={'class': 'form-control'}),
+            'slug': forms.HiddenInput(),  # Скрываем поле slug
         }
         labels = {
             'text': _('Review Text'),
             'rating': _('Rating'),
+            'slug': _('Slug'),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['slug'].required = False  # Поле slug не обязательно в форме
+        self.fields['slug'].initial = 'temporary-slug'  # Значение по умолчанию
 
     def clean_text(self):
         text = self.cleaned_data.get('text')

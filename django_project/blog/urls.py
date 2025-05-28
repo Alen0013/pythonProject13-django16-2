@@ -11,4 +11,5 @@ urlpatterns = [
     path('pet/<int:pk>/delete/', views.PetDeleteView.as_view(), name='pet_delete'),
     path('pet/<int:pk>/toggle-active/', views.PetToggleActiveView.as_view(), name='pet_toggle_active'),
     path('pet/<int:pet_pk>/review/', views.ReviewCreateView.as_view(), name='review_create'),
+    path('review/<slug:slug>/', views.ReviewDetailView.as_view(), name='review_detail'),
 ]
